@@ -1,6 +1,6 @@
 <?php
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once dirname(__DIR__) . '/config/mq_config.php';
+require_once __DIR__ . '/components/rabbitmq/config/mq_config.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;

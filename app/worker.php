@@ -1,6 +1,6 @@
 <?php
-require_once dirname(__DIR__) . '/config/mq_config.php';
-require_once __DIR__ . '/components/RabbitMq.php';
+require_once __DIR__ . '/components/rabbitmq/RabbitMq.php';
+require_once __DIR__ . '/components/rabbitmq/config/mq_config.php';
 
 $mq = RabbitMq::instance($mq_conf);
 $callback = function ($msg) {

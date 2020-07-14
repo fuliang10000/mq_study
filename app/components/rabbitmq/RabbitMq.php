@@ -1,8 +1,9 @@
 <?php
-require_once dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require_once dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php';
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 /**
  * RabbitMq服务类
@@ -10,7 +11,8 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class RabbitMq
 {
-    public $channel;//信道
+    public $channel; //信道
+    public $table = []; //AMQPTable
     public $exchange = 'kd_sms_send_ex';//交换机
     public $queueName = 'kd_sms_send_q';//队列名称
     public $route = 'sms_send';//路由键
@@ -44,14 +46,17 @@ class RabbitMq
     {
         try {
             $this->conn = new AMQPStreamConnection($conf['host'], $conf['port'], $conf['user'], $conf['pwd'], $conf['vhost']);
-            if (isset($conf['exchange'])) $this->exchange = $conf['exchange'];
+            if (isset($conf['exchange'])) {
+                $this->exchange = $conf['exchange'];
+                $this->route = $conf['exchange'];
+            }
             if (isset($conf['queue'])) $this->queueName = $conf['queue'];
+            if (isset($conf['route'])) $this->route = $conf['route'];
             $this->getConnection();
         } catch (Exception $e) {
             throw new Exception('cannot connection rabbitMq:' . $e->getMessage());
         }
     }
-
 
     public function getConnection()
     {
@@ -62,6 +67,15 @@ class RabbitMq
         $this->createExchange();
     }
 
+    public function setTable($table)
+    {
+        $this->table = new AMQPTable();
+        if (!empty($table) && is_array($table)) {
+            foreach ($table as $k => $v) {
+                $this->table->set($k, $v);
+            }
+        }
+    }
 
     public function createExchange()
     {
@@ -69,16 +83,15 @@ class RabbitMq
         //durable：true、false true：服务器重启会保留下来Exchange。警告：仅设置此选项，不代表消息持久化。即不保证重启后消息还在
         //autoDelete:true、false.true:当已经没有消费者时，服务器是否可以删除该Exchange
 
-        $this->channel->exchange_declare($this->exchange, $this->exchangeType, false, true, false);
+        $this->channel->exchange_declare($this->exchange, $this->exchangeType, false, false, false);
 
         //passive: 消极处理，判断是否存在队列，存在则返回，不存在则直接抛出 PhpAmqpLib\Exception\AMQPProtocolChannelException 异常
         //durable: true/false true :在服务器重启时，能够存活
         //exclusive: 是否为当前连接的专用队列，在连接段开后，会自动删除该队列
         //autodelete: 当没有任何消费者使用时，自动删除该队列
         //arguments: 自定义规则
-        $this->channel->queue_declare($this->queueName, false, true, false, false);
+        $this->channel->queue_declare($this->queueName, false, true, false, false, false, $this->table);
     }
-
 
     /**
      * 绑定消息队列
@@ -92,16 +105,17 @@ class RabbitMq
     /**
      * 发送消息
      *
-     * @param $msgBody  string  消息类型
+     * @param $msgBody  string  消息
+     * @param $properties  array
      */
-    public function sendMsg($msgBody)
+    public function sendMsg($msgBody, $properties = ['content_type' => 'text/plain', 'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT])
     {
         // content_type: 发送消息的类型
         // delivery_mode: 设置的属性，比如设置该消息持久化['delivery_mode' => 2]
         if (is_array($msgBody)) {
             $msgBody = json_encode($msgBody);
         }
-        $msg = new AMQPMessage($msgBody, ['content_type' => 'text/plain', 'delivery_mode' => 2]); //生成消息
+        $msg = new AMQPMessage($msgBody, $properties); //生成消息
         $this->channel->basic_publish($msg, $this->exchange, $this->route); //推送消息到某个交换机
     }
 
@@ -119,6 +133,7 @@ class RabbitMq
         //4.no_ack false 收到消息后，是否不需要回复确认即被认为是被消费
         //5.exclusive false 排他消费者，即这个队列只能有一个消费者消费，适用于人物不允许进行并打处理的情况下，比如系统对接
         //6.callback 回调函数
+        $this->channel->basic_qos(null, 1, null);
         $this->channel->basic_consume($this->queueName, '', false, false, false, false, $callback);
 
         //监听消息
@@ -129,7 +144,7 @@ class RabbitMq
 
     public function __destruct()
     {
-        $this->channel()->close();
+        $this->channel->close();
         $this->conn->close();
     }
 }
