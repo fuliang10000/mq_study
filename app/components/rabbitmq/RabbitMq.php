@@ -13,10 +13,10 @@ class RabbitMq
 {
     public $channel; //信道
     public $headers = []; //AMQPTable
-    public $exchange = 'kd_sms_send_ex';//交换机
-    public $queueName = 'kd_sms_send_q';//队列名称
-    public $route = 'sms_send';//路由键
+    public $exchange = 'exchange';//交换机
+    public $queueName = 'queue';//队列名称
     public $exchangeType = 'direct';//交换机类型
+    public $route = 'sms_send';//路由键
 
     protected $conn;
 
@@ -41,6 +41,10 @@ class RabbitMq
      *               @$conf['user']  用户名
      *               @$conf['pwd']   密码
      *               @$conf['vhost'] 虚拟host
+     *               @$conf['exchange'] 交换机名称
+     *               @$conf['queue'] 队列名称
+     *               @$conf['route'] 路由键
+     *               @$conf['type'] 交换机类型
      */
     public function __construct($conf)
     {
@@ -68,14 +72,14 @@ class RabbitMq
         $this->createExchange();
     }
 
-    public function setHeaders($headers)
+    /**
+     * 设置application_headers
+     * For example, `['x-delay' => 10000]`. 设置延时队列，延时10秒
+     * @param array $headers
+     */
+    public function setHeaders($headers = [])
     {
-        $this->headers = new AMQPTable();
-        if (!empty($headers) && is_array($headers)) {
-            foreach ($headers as $k => $v) {
-                $this->headers->set($k, $v);
-            }
-        }
+        $this->headers = $headers;
     }
 
     public function createExchange()
@@ -83,7 +87,6 @@ class RabbitMq
         //passive: 消极处理， 判断是否存在队列，存在则返回，不存在直接抛出 PhpAmqpLib\Exception\AMQPProtocolChannelException 异常
         //durable：true、false true：服务器重启会保留下来Exchange。警告：仅设置此选项，不代表消息持久化。即不保证重启后消息还在
         //autoDelete:true、false.true:当已经没有消费者时，服务器是否可以删除该Exchange
-
         $this->channel->exchange_declare($this->exchange, $this->exchangeType, false, true, false);
 
         //passive: 消极处理，判断是否存在队列，存在则返回，不存在则直接抛出 PhpAmqpLib\Exception\AMQPProtocolChannelException 异常
@@ -91,7 +94,7 @@ class RabbitMq
         //exclusive: 是否为当前连接的专用队列，在连接段开后，会自动删除该队列
         //autodelete: 当没有任何消费者使用时，自动删除该队列
         //arguments: 自定义规则
-        $this->channel->queue_declare($this->queueName, false, true, false, false, false, $this->headers);
+        $this->channel->queue_declare($this->queueName, false, true, false, false, false);
     }
 
     /**
@@ -118,6 +121,10 @@ class RabbitMq
         }
         $msg = new AMQPMessage($msgBody, $properties); //生成消息
         // 设置headers
+        if ($this->headers && is_array($this->headers)) {
+            $header = new AMQPTable($this->headers);
+            $msg->set('application_headers', $header);
+        }
         $this->channel->basic_publish($msg, $this->exchange, $this->route); //推送消息到某个交换机
     }
 
