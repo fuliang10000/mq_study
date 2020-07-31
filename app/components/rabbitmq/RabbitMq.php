@@ -23,10 +23,14 @@ class RabbitMq
     protected static $connection;  //静态rabbitMq连接
 
     //实例化该service时首先加载的方法：检测是否已经有rabbitMq连接【始终保持是同一连接】
-    public static function instance($conf)
+    public static function instance($conf = [])
     {
+        require_once __DIR__ . '/config/mq_config.php';
+        if ($conf) {
+            $mq_conf = array_merge($mq_conf, $conf);
+        }
         if (!self::$connection) {
-            self::$connection = new self($conf);
+            self::$connection = new self($mq_conf);
         }
 
         return self::$connection;

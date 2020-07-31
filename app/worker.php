@@ -1,7 +1,6 @@
 <?php
 namespace app;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-require_once __DIR__ . '/components/rabbitmq/config/mq_config.php';
 use app\components\rabbitmq\RabbitMq;
 set_time_limit(0);
 
