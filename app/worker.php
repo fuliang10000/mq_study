@@ -1,7 +1,9 @@
 <?php
-set_time_limit(0);
-require_once __DIR__ . '/components/rabbitmq/RabbitMq.php';
+namespace app;
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once __DIR__ . '/components/rabbitmq/config/mq_config.php';
+use app\components\rabbitmq\RabbitMq;
+set_time_limit(0);
 
 $mq_conf['exchange'] = 'qq_new';
 $mq_conf['queue'] = 'qq_new_q';

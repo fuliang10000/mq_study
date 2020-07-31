@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__ . '/components/rabbitmq/RabbitMq.php';
+namespace app;
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 require_once __DIR__ . '/components/rabbitmq/config/mq_config.php';
-
+use app\components\rabbitmq\RabbitMq;
 $mq_conf['exchange'] = 'qq_new';
 $mq_conf['queue'] = 'qq_new_q';
 $mq_conf['type'] = 'x-delayed-message';

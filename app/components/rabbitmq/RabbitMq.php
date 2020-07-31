@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php';
+namespace app\components\rabbitmq;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
