@@ -12,7 +12,7 @@
             padding: 0;
         }
         .main {
-            width: 800px;
+            width: 400px;
             height: 400px;
             margin: 50px auto;
         }
@@ -22,7 +22,7 @@
         }
         .map {
             position: relative;
-            width: 800px;
+            width: 400px;
             height: 400px;
             background: #ccc;
         }
@@ -30,7 +30,6 @@
 </head>
 <body>
 <div class="main">
-    <h3>瑶瑶专属版</h3>
     <button class="btn" id="begin">开始游戏</button>
     <div class="map" id="map"></div>
 
@@ -179,7 +178,7 @@
                 f.style.background = 'red';
                 f.style.borderRadius = '50%';
                 f.style.position = 'absolute';
-                this.x = Math.floor(Math.random()*80);
+                this.x = Math.floor(Math.random()*40);
                 this.y = Math.floor(Math.random()*40);
                 f.style.left = this.x * this.width + 'px';
                 f.style.top = this.y * this.height + 'px';
