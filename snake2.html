@@ -100,7 +100,7 @@
                 }
 
                 // 判断是否出界,一蛇头判断,出界的话，
-                if (this.body[0].x < 0 || this.body[0].x > 79 || this.body[0].y < 0 || this.body[0].y > 39) {
+                if (this.body[0].x < 0 || this.body[0].x > 39 || this.body[0].y < 0 || this.body[0].y > 39) {
                     clearInterval(timer);   // 清除定时器，
                     alert("你瞎吗？撞死了！");
                     // 删除旧的
