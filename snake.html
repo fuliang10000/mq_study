@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇</title>
+    <style>
+        .out{
+            width: 500px;
+            height: 500px;
+            background: #ccc;
+            border: 1px solid blue;
+            position: relative;
+            overflow: hidden;
+        }
+        p{
+            display: inline-block;
+        }
+        span{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="out">
+</div>
+<button onclick="reset()">再玩一局</button>
+&nbsp;&nbsp;&nbsp;&nbsp;得分：<p></p>
+<span>得分大于等于5，改变速度。得分大于等于10，改变速度。</span>
+<script src="./snake.js"></script>
+<script>
+    var col=10;
+    var row=10;
+    var w=50;
+    var h=50;
+    var out=$('.out')[0];
+    var score=$('p')[0];
+    var bodys=[];
+    var num=0;
+
+
+    var time=1000;//速度
+    //背景
+    createBg(out,col,row)
+    // 蛇头
+    var head=createNode(1,out)
+    // 食物
+    var food=createNode(2,out)//createFood(out,w,h,col,row,1)
+    createKeyEvent(head);
+    //计时器
+    var timer=setInterval(play,time)
+    //
+    function play() {
+        //身体移动
+        moveBody(bodys,head)
+        //头部移动
+        moveHead(head);
+        var checkstate=check(head,food);
+
+        if(checkstate){
+            //计算分数
+            num+=Number(food.getAttribute('value'));
+            score.innerHTML=num+"分"
+            //判断分数 改变速度
+            if (num>=5&&num<10) {
+                time=600;
+                clearInterval(timer);
+                timer=setInterval(play,time);
+
+            }
+            else if(num>=10){
+                time=300;
+                clearInterval(timer);
+                timer=setInterval(play,time);
+            }
+
+
+            //删除food
+            out.removeChild(food);
+            //创建food(food不能创建在身体上)
+            food=createNode(2,out)
+            //创建身体
+            if (bodys.length>0) {
+                // var body=createBody(out,w,h,bodys[bodys.length-1])
+                var body=createNode(3,out,bodys[bodys.length-1])
+                console.log(body)
+            }else{
+                // var body=createBody(out,w,h,head)
+                var body=createNode(3,out,head)
+                console.log(body)
+            }
+            bodys.push(body)
+        }
+
+        var bodycheckstate=checkbody(head,bodys);
+        if (bodycheckstate==false) {
+            clearInterval(timer);
+            alert("咬到自己了！")
+        }
+
+
+        var borderstate=checkBorder(head,out);
+        if (borderstate==false) {
+            clearInterval(timer);
+            alert("game over!")
+        }
+    }
+
+</script>
+</body>
+</html>
