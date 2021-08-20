@@ -1,7 +1,7 @@
 <?php
 namespace app;
-use common\NewConsumer;
-use common\OriginalConsumer;
+use common\adapter\NewConsumer;
+use common\adapter\OriginalConsumer;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 

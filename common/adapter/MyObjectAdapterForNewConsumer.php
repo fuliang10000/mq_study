@@ -1,7 +1,7 @@
 <?php
 
 
-namespace common;
+namespace common\adapter;
 
 
 class MyObjectAdapterForNewConsumer
