@@ -1,7 +1,5 @@
 <?php
 namespace app;
-use common\adapter\NewConsumer;
-use common\adapter\OriginalConsumer;
 use common\decorator\Cd;
 use common\decorator\CdTrackListDecoratorCaps;
 
