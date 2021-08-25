@@ -13,9 +13,15 @@ class MyObject
     public function setDelegateType($type)
     {
         $this->delegateType = $type;
+
+        return $this;
     }
     public function createDelegateObject()
     {
+        $objectClass = 'common\delegate\MyDelegateObject' . $this->delegateType;
+        $this->internalDelegate = new $objectClass();
+
+        return $this;
     }
     public function runDelegateAction()
     {

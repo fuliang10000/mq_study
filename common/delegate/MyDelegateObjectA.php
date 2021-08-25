@@ -4,11 +4,11 @@
 namespace common\delegate;
 
 
-class MyDelegateObject
+class MyDelegateObjectA
 {
 
     public function action()
     {
-        echo "run action\r\n";
+        echo "run action-A\r\n";
     }
 }
