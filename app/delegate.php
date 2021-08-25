@@ -1,4 +1,7 @@
 <?php
+/**
+ * 委托模式
+ */
 namespace app;
 
 use common\delegate\MyObject;
