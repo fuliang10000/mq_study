@@ -4,7 +4,7 @@
 namespace common\delegate;
 
 
-class m3uPlayListDelegate
+class M3uPlayListDelegate
 {
     public function getPlayList($songs)
     {

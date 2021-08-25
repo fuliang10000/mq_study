@@ -12,7 +12,7 @@ class NewPlayList
     public function __construct($type)
     {
         $this->__songs = [];
-        $object = "common\\delegate\\{$type}PlayListDelegate";
+        $object = "common\\delegate\\" . ucwords($type) . "PlayListDelegate";
         $this->__typeObject = new $object;
     }
 

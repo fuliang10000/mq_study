@@ -4,7 +4,7 @@
 namespace common\delegate;
 
 
-class plsPlayListDelegate
+class PlsPlayListDelegate
 {
     public function getPlayList($songs)
     {
