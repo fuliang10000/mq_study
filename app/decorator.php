@@ -1,4 +1,7 @@
 <?php
+/**
+ * 装饰器模式
+ */
 namespace app;
 use common\decorator\Cd;
 use common\decorator\CdTrackListDecoratorCaps;
@@ -6,7 +9,7 @@ use common\decorator\CdTrackListDecoratorCaps;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $myCD = new Cd();
-$tracksFromSource = ['WhatIt Means', 'Brr', 'Goodbye'];
+$tracksFromSource = ['What It Means', 'Brr', 'Goodbye'];
 foreach ($tracksFromSource as $track) {
     $myCD->addTrack($track);
 }
