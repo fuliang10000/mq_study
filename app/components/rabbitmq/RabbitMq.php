@@ -1,4 +1,14 @@
 <?php
+
+declare(strict_types=1);
+/**
+ * This file is part of Shoplinke.
+ * Developed By Middle Platform Team Of Starlinke
+ *
+ * @link     https://www.starlinke.com
+ * @document https://starlink.feishu.cn/docs/doccnuhsKZVumq24kIecc4oefbf
+ * $contact  dev@starlinke.com
+ */
 namespace app\components\rabbitmq;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -7,34 +17,25 @@ use PhpAmqpLib\Wire\AMQPTable;
 
 /**
  * RabbitMq服务类
- * Class RabbitMq
+ * Class RabbitMq.
  */
 class RabbitMq
 {
     public $channel; //信道
+
     public $headers = []; //AMQPTable
-    public $exchange = 'exchange';//交换机
-    public $queueName = 'queue';//队列名称
-    public $exchangeType = 'direct';//交换机类型
-    public $route = 'sms_send';//路由键
+
+    public $exchange = 'exchange'; //交换机
+
+    public $queueName = 'queue'; //队列名称
+
+    public $exchangeType = 'direct'; //交换机类型
+
+    public $route = 'sms_send'; //路由键
 
     protected $conn;
 
     protected static $connection;  //静态rabbitMq连接
-
-    //实例化该service时首先加载的方法：检测是否已经有rabbitMq连接【始终保持是同一连接】
-    public static function instance($conf = [])
-    {
-        require_once __DIR__ . '/config/mq_config.php';
-        if ($conf) {
-            $mq_conf = array_merge($mq_conf, $conf);
-        }
-        if (!self::$connection) {
-            self::$connection = new self($mq_conf);
-        }
-
-        return self::$connection;
-    }
 
     /**
      * RabbitMq constructor.
@@ -58,18 +59,44 @@ class RabbitMq
                 $this->exchange = $conf['exchange'];
                 $this->route = $conf['exchange'];
             }
-            if (isset($conf['queue'])) $this->queueName = $conf['queue'];
-            if (isset($conf['route'])) $this->route = $conf['route'];
-            if (isset($conf['type'])) $this->exchangeType = $conf['type'];
+            if (isset($conf['queue'])) {
+                $this->queueName = $conf['queue'];
+            }
+            if (isset($conf['route'])) {
+                $this->route = $conf['route'];
+            }
+            if (isset($conf['type'])) {
+                $this->exchangeType = $conf['type'];
+            }
             $this->getConnection();
         } catch (Exception $e) {
             throw new Exception('cannot connection rabbitMq:' . $e->getMessage());
         }
     }
 
+    public function __destruct()
+    {
+        $this->channel->close();
+        $this->conn->close();
+    }
+
+    //实例化该service时首先加载的方法：检测是否已经有rabbitMq连接【始终保持是同一连接】
+    public static function instance($conf = [])
+    {
+        require_once __DIR__ . '/config/mq_config.php';
+        if ($conf) {
+            $mq_conf = array_merge($mq_conf, $conf);
+        }
+        if (! self::$connection) {
+            self::$connection = new self($mq_conf);
+        }
+
+        return self::$connection;
+    }
+
     public function getConnection()
     {
-        if (!isset($this->channel)) {
+        if (! isset($this->channel)) {
             $this->channel = $this->conn->channel();
         }
 
@@ -78,7 +105,7 @@ class RabbitMq
 
     /**
      * 设置application_headers
-     * For example, `['x-delay' => 10000]`. 设置延时队列，延时10秒
+     * For example, `['x-delay' => 10000]`. 设置延时队列，延时10秒.
      * @param array $headers
      */
     public function setHeaders($headers = [])
@@ -103,7 +130,7 @@ class RabbitMq
 
     /**
      * 绑定消息队列
-     * 博主个人看法：在创建交换机与队列的时候，可以手动在rabbitMq界面将二者绑定，没有必要每次进行发送或者消费队列时进行绑定；
+     * 博主个人看法：在创建交换机与队列的时候，可以手动在rabbitMq界面将二者绑定，没有必要每次进行发送或者消费队列时进行绑定；.
      */
     public function bindQueue()
     {
@@ -111,7 +138,7 @@ class RabbitMq
     }
 
     /**
-     * 发送消息
+     * 发送消息.
      *
      * @param $msgBody  string  消息
      * @param $properties  array
@@ -133,7 +160,7 @@ class RabbitMq
     }
 
     /**
-     * 消费消息
+     * 消费消息.
      *
      * @param $callback callable|null  回调函数 在这里可以添加消费消息的具体逻辑
      */
@@ -153,11 +180,5 @@ class RabbitMq
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
-    }
-
-    public function __destruct()
-    {
-        $this->channel->close();
-        $this->conn->close();
     }
 }

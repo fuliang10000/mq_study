@@ -1,16 +1,23 @@
 <?php
 
-
+declare(strict_types=1);
+/**
+ * This file is part of Shoplinke.
+ * Developed By Middle Platform Team Of Starlinke
+ *
+ * @link     https://www.starlinke.com
+ * @document https://starlink.feishu.cn/docs/doccnuhsKZVumq24kIecc4oefbf
+ * $contact  dev@starlinke.com
+ */
 namespace common\dao;
-
 
 abstract class BaseDao
 {
-    private $__connection;
-
     protected $_primaryKey = 'id';
 
     protected $_tableName;
+
+    private $__connection;
 
     public function __construct($user, $pass, $host, $database)
     {
@@ -34,7 +41,7 @@ abstract class BaseDao
 
         $rows = [];
         while ($result = mysql_fetch_array($results)) {
-            $rows[] =  $result;
+            $rows[] = $result;
         }
 
         return $rows;

@@ -1,8 +1,16 @@
 <?php
+
+declare(strict_types=1);
 /**
- * 装饰器模式
+ * This file is part of Shoplinke.
+ * Developed By Middle Platform Team Of Starlinke
+ *
+ * @link     https://www.starlinke.com
+ * @document https://starlink.feishu.cn/docs/doccnuhsKZVumq24kIecc4oefbf
+ * $contact  dev@starlinke.com
  */
 namespace app;
+
 use common\decorator\Cd;
 use common\decorator\CdTrackListDecoratorCaps;
 
