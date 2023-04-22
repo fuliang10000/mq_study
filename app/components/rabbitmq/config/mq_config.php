@@ -10,10 +10,10 @@ declare(strict_types=1);
  * $contact  dev@starlinke.com
  */
 $mq_conf = [
-    'host' => '106.53.244.63',
+    'host' => '127.0.0.1',
     'port' => 5672,
-    'user' => 'guest',
-    'pwd' => '2008Fuliang11',
+    'user' => 'root',
+    'pwd' => 'a123456',
     'vhost' => '/',
 ];
 

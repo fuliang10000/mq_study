@@ -16,9 +16,9 @@ use app\components\rabbitmq\RabbitMq;
 
 set_time_limit(0);
 
-$mq_conf['exchange'] = 'qq_new';
-$mq_conf['queue'] = 'qq_new_q';
-$mq_conf['type'] = 'x-delayed-message';
+$mq_conf['exchange'] = 'demoExchange';
+$mq_conf['queue'] = 'demoQueue';
+$mq_conf['type'] = 'topic';
 $mq = RabbitMq::instance($mq_conf);
 $callback = function ($msg) {
     file_put_contents(dirname(__DIR__) . '/logs.txt', date('Y/m/d H:i:s', time()) . " \t输出结果:" . var_export($msg->getBody(), true) . "\r\n\r\n", FILE_APPEND);
